@@ -185,12 +185,12 @@ module PgHero
         rescue PgQuery::ParseError
           return {error: "Parse error"}
         end
-        return {error: "Unknown structure"} unless tree.size == 1
+        return {error: "Unknown structure"} unless tree.try(:size) == 1
 
-        tree = tree.first
+        tree = tree.try(:first)
 
         # pg_query 1.0.0
-        tree = tree["RawStmt"]["stmt"] if tree["RawStmt"]
+        tree = tree["RawStmt"]["stmt"] if tree.present && tree["RawStmt"]
 
         table = parse_table(tree) rescue nil
         unless table
